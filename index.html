@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+        integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="script.js" defer></script>
+    <title>My Grocery Bucket</title>
+</head>
+<body class="bg-blue-200 flex justify-center align-start">
+    <header class="border border-red-500 mt-24">
+        <div class="card py-10 px-4 bg-white">
+            <h1 class="capitalize font-bold mb-5 text-center">my grocery bucket</h1>
+            <form action="" class="input-box mb-8">
+                <input type="text" name="text" id="text" class="bg-blue-100">
+                <button type="submit" id="submit" class="bg-blue-300 px-2">SUBMIT</button>
+            </form>
+            <ul>
+                <li class="px-2 py-1 border border-black flex justify-between">
+                    <span>eggs</span>
+                    <ul class="edit-box flex gap-3">
+                        <li><i class="fas fa-edit text-green-600 cursor-pointer"></i></li>
+                        <li><i class="fas fa-trash-alt text-red-500 cursor-pointer"></i></li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="message-box mt-8 text-center">
+                <p>clear items</p>
+            </div>
+        </div>
+
+    </header>
+</body>
+</html>
