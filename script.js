@@ -11,7 +11,6 @@ const messageBox = document.querySelector(".message-box")
 const listContainer = document.querySelector(".list-container")
 
 const id = new Date().getTime().toString()
-let groceryList = []
 let editList = false
 let editID = ""
 
@@ -32,7 +31,6 @@ function addItem(ev) {
     ev.preventDefault()
 
     const inputValue = input.value
-    console.log(inputValue)
 
     if (inputValue && !editList) {
         
@@ -107,17 +105,14 @@ function clearAll() {
 
     clearAllBtn.classList.add("hidden")
     setToDefault()
-    // localStorage.removeItem
+    localStorage.removeItem("list")
 }
 
 function deleteItem(ev) {
     const element = ev.currentTarget.parentElement.parentElement
     const id = element.dataset.id
 
-    console.log(id)
-
     listContainer.removeChild(element)
-    console.log(listContainer.children)
 
     if (listContainer.children.length === 0) {
         clearAllBtn.classList.add("hidden")
@@ -125,6 +120,7 @@ function deleteItem(ev) {
     
     messageBox.innerHTML = `<p class="bg-red-300">Item removed</p>`
     setTimeout(disappear, 1000)
+    setToDefault()
     clearStorage(id)
 }
 
@@ -137,6 +133,7 @@ function editItem(ev) {
     editID = element.dataset.id
     input.value = editItem.textContent
     submitBtn.innerText = "EDIT"
+    editLocalStorage(editID, input.value)
 }
 
 
@@ -145,18 +142,48 @@ function editItem(ev) {
 // ============ LOCAL STORAGE ===========
 
 
-const addToLocalStorage = (x,y) => {
-    localStorage.setItem(x,y)
-}
+function addToLocalStorage(id, inputValue) {
+    let groceriesData = {id, inputValue}
+    let items = getLocalStorage()
 
-function clearStorage(data) {
-    localStorage.removeItem(data)
+    items.push(groceriesData)
+    console.log(items)
+
+    localStorage.setItem("list", JSON.stringify(items))
+}
+function getLocalStorage() {
+    return localStorage.getItem("list")? JSON.parse(localStorage.getItem("list")): []
+}
+function clearStorage(id) {
+    let items = getLocalStorage()
+
+    items = items.filter(item => {
+        if (item.id !== id) {
+            return item
+        }
+    })
+    
+    localStorage.setItem("list", JSON.stringify(items))
 }
 
 
 function editLocalStorage(editID, value) {
-    localStorage.setItem(editID, value)
+    let items = getLocalStorage()
+
+    items = items.map(item => {
+        if (item.id === editID) {
+            item.inputValue = value
+        }
+
+        return item
+    })
+
+    localStorage.setItem("list", JSON.stringify(items))
 }
+
+
+
+
 
 
 
