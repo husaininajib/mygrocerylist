@@ -14,24 +14,25 @@ let editElement
 let editList = false
 let editID = ""
 
+window.addEventListener("load", () => {
+    loadExistingList()
+})
 
 form.addEventListener("submit", addItem)
-
 
 clearAllBtn.addEventListener("click", () => {
     setToDefault()
     clearAll()
-
-    messageBox.innerHTML = `<p class="bg-red-300">Empty Bucket</p>`
+    alertMessage("red", 300, "Empty bucket")
     setTimeout(disappear, 1000)
 })
 
-
+// ============ FUNCTION =============
 
 function addItem(ev) {
     ev.preventDefault()
 
-    const id = new Date().getTime().toString()
+    const id = new Date().getTime().toString() // id cannot be global scope
     const inputValue = input.value
 
     if (inputValue && !editList) {
@@ -41,7 +42,7 @@ function addItem(ev) {
         element.style.display = "flex"
 
         let att = document.createAttribute("data-id")
-        att.value = id
+        att.value = id 
         element.setAttributeNode(att)
 
         element.innerHTML = `<span class= "input-item">${inputValue}</span>
@@ -52,14 +53,14 @@ function addItem(ev) {
         
         listContainer.appendChild(element)
 
-        successMessage()
+        alertMessage("green", 200, "Item added to bucket")
         setTimeout(disappear, 1000)
         addToLocalStorage(id, inputValue)
         setToDefault()
         clearAllBtn.classList.remove("hidden")
 
-        // trash btn & edit btn
-        const trashBtn = element.querySelector(".delete-btn")
+        // trash btn & edit btn // cannot use document.querySelector cuz javascript will read all trashBtn when the list is more than 1(not specific)
+        const trashBtn = element.querySelector(".delete-btn") 
         const editBtn = element.querySelector(".edit-btn")
 
         trashBtn.addEventListener("click", deleteItem)
@@ -69,34 +70,29 @@ function addItem(ev) {
         editElement.textContent = inputValue
 
         console.log(editID)
+        alertMessage("green", 200, "Item changed")
         editLocalStorage(editID, inputValue)
         setToDefault()
     } else {      
-        emptyMessage()
+        alertMessage("red", 300, "Please enter your item")
         setTimeout(disappear, 1000)
     }
 }
 
-// ============ MESSAGE FUNCTION =============
-
-function successMessage() {
-    messageBox.innerHTML = `<p class="bg-green-200">item added to bucket</p>`
-}
-
-function emptyMessage() {
-    messageBox.innerHTML = `<p class="bg-red-300">please enter value</p>`
+function alertMessage(color, num, message) {
+    messageBox.innerHTML = `<p class="bg-${color}-${num}">${message}</p>`
 }
 
 function disappear() {
     messageBox.innerHTML = ""
 }
 
-const setToDefault = () => {
+function setToDefault() {
     input.value = ""
     editList = false
     editID = ""
     submitBtn.innerText = "SUBMIT"
-}
+} 
 
 function clearAll() {
     const items = document.querySelectorAll(".list-item")
@@ -122,7 +118,7 @@ function deleteItem(ev) {
         clearAllBtn.classList.add("hidden")
     }
     
-    messageBox.innerHTML = `<p class="bg-red-300">Item removed</p>`
+    alertMessage("red", 300, "Item removed")
     setTimeout(disappear, 1000)
     setToDefault()
     clearStorage(id)
@@ -146,15 +142,16 @@ function editItem(ev) {
 
 function addToLocalStorage(id, inputValue) {
     let groceriesData = {id, inputValue}
-    let items = getLocalStorage()
+    let items = getLocalStorage() //basically means items = array of groceriesData
 
     items.push(groceriesData)
-    console.log(items)
 
-    localStorage.setItem("list", JSON.stringify(items))
+    localStorage.setItem("list", JSON.stringify(items)) //JSON stringfy need to be used cuz we want the data stored in local storage is followw the format we exatcly want i.e in array
 }
 function getLocalStorage() {
-    return localStorage.getItem("list")? JSON.parse(localStorage.getItem("list")): []
+    return localStorage.getItem("list")? JSON.parse(localStorage.getItem("list")): [] //this function is to create an array inside local storage
+
+    // JSON parse is used cuz we want the data follow the format in local storage i.e an array
 }
 function clearStorage(id) {
     let items = getLocalStorage()
@@ -183,7 +180,44 @@ function editLocalStorage(id, value) {
     localStorage.setItem("list", JSON.stringify(items))
 }
 
+// ====== RUN ON LOAD =========
 
+const loadExistingList = () => {
+    let items = getLocalStorage()
+
+    if (items.length > 0) {
+        items.forEach(item => {
+        setupExistingList(item.id, item.inputValue )
+        })
+    } // if we dont use if statement, the code still working
+}
+
+const setupExistingList = (id, value) => {
+    const element = document.createElement("li")
+    element.classList.add("list-item")
+    element.style.display = "flex"
+
+    let att = document.createAttribute("data-id")
+    att.value = id
+    element.setAttributeNode(att)
+
+    element.innerHTML = `<span class= "input-item">${value}</span>
+                <ul class="edit-box flex gap-3">
+                    <li class= "edit-btn"><i class="fas fa-edit text-green-600 cursor-pointer"></i></li>
+                    <li class = "delete-btn"><i class="fas fa-trash-alt text-red-500 cursor-pointer"></i></li>
+                </ul>`
+    
+    listContainer.appendChild(element)
+
+    setToDefault()
+    clearAllBtn.classList.remove("hidden")
+
+    const trashBtn = element.querySelector(".delete-btn") 
+    const editBtn = element.querySelector(".edit-btn")
+
+    trashBtn.addEventListener("click", deleteItem)
+    editBtn.addEventListener("click", editItem)
+}
 
 
 
