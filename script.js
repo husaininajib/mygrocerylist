@@ -10,12 +10,13 @@ const clearAllBtn = document.getElementById("clear-all-btn")
 const messageBox = document.querySelector(".message-box")
 const listContainer = document.querySelector(".list-container")
 
-const id = new Date().getTime().toString()
+let editElement
 let editList = false
 let editID = ""
 
 
 form.addEventListener("submit", addItem)
+
 
 clearAllBtn.addEventListener("click", () => {
     setToDefault()
@@ -30,13 +31,16 @@ clearAllBtn.addEventListener("click", () => {
 function addItem(ev) {
     ev.preventDefault()
 
+    const id = new Date().getTime().toString()
     const inputValue = input.value
 
     if (inputValue && !editList) {
         
         const element = document.createElement("li")
         element.classList.add("list-item")
-        const att = document.createAttribute("data-id")
+        element.style.display = "flex"
+
+        let att = document.createAttribute("data-id")
         att.value = id
         element.setAttributeNode(att)
 
@@ -54,23 +58,23 @@ function addItem(ev) {
         setToDefault()
         clearAllBtn.classList.remove("hidden")
 
+        // trash btn & edit btn
+        const trashBtn = element.querySelector(".delete-btn")
+        const editBtn = element.querySelector(".edit-btn")
+
+        trashBtn.addEventListener("click", deleteItem)
+        editBtn.addEventListener("click", editItem)
     } else if (inputValue && editList) {
-        editList = true
-        const inputItem = document.querySelector(".input-item")
-        inputItem.innerText = inputValue
+        
+        editElement.textContent = inputValue
+
+        console.log(editID)
         editLocalStorage(editID, inputValue)
         setToDefault()
     } else {      
         emptyMessage()
         setTimeout(disappear, 1000)
     }
-
-    // trash btn
-    const trashBtn = document.querySelector(".delete-btn")
-    const editBtn = document.querySelector(".edit-btn")
-
-    trashBtn.addEventListener("click", deleteItem)
-    editBtn.addEventListener("click", editItem)
 }
 
 // ============ MESSAGE FUNCTION =============
@@ -125,17 +129,15 @@ function deleteItem(ev) {
 }
 
 function editItem(ev) {
-    // const parentItem = ev.currentTarget.classList
+    
     const element = ev.currentTarget.parentElement.parentElement
-    const editItem = ev.currentTarget.parentElement.previousElementSibling
+    editElement = ev.currentTarget.parentElement.previousElementSibling
 
     editList = true
-    editID = element.dataset.id
-    input.value = editItem.textContent
+    input.value = editElement.textContent
     submitBtn.innerText = "EDIT"
-    editLocalStorage(editID, input.value)
+    editID = element.dataset.id
 }
-
 
 
 
@@ -167,11 +169,11 @@ function clearStorage(id) {
 }
 
 
-function editLocalStorage(editID, value) {
+function editLocalStorage(id, value) {
     let items = getLocalStorage()
 
     items = items.map(item => {
-        if (item.id === editID) {
+        if (item.id === id) {
             item.inputValue = value
         }
 
